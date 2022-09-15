@@ -41,9 +41,7 @@ class Episodes (db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120), unique=True, nullable=False)
     air_date = db.Column(db.String(20), unique=False, nullable=False)
-    alive = db.Column(db.Boolean(), unique=False, nullable=False)
-    species = db.Column(db.String(30), unique=False, nullable=False)
-
+   
     def __repr__(self):
         return '<Episodes %r>' % self.title
 
