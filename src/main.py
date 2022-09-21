@@ -30,7 +30,7 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
-@app.route('/user', methods=['GET'])
+@app.route('/users', methods=['GET'])
 def handle_hello():
 
     response_body = {
@@ -38,6 +38,50 @@ def handle_hello():
     }
 
     return jsonify(response_body), 200
+
+@app.route('/characters', methods=['GET'])
+def get_characters():
+    return "All the Characters"
+
+
+
+@app.route('/characters/<int:char_id>', methods=['GET'])
+def get_one_character(char_id):
+    return "One of the  Characters"
+
+
+@app.route('/episodes', methods=['GET'])
+def get_episodes():
+    return "All the Episodes"
+
+
+@app.route('/pisodes/<int:episode_id>', methods=['GET'])
+def get_one_episode(episode_id):
+    return "One of the  Episodes"
+
+@app.route('/users/favorites', methods=['GET'])
+def et_user_favorites():
+    return "All the current user favorites"
+
+@app.route('/favorite/character/<int:char_id>', methods=['POST'])
+def post_fav_character(char_id):
+    return "Add character 'char ID' to user's favorites" 
+
+@app.route('/favorite/episode/<int:episode_id>', methods=['POST'])
+def post_fav_episode(episode_id):
+    return "Add a episode 'Episode_id' to user's favorites" 
+
+______
+@app.route('/favorite/character/<int:char_id>', methods=['DELETE'])
+def delete_fav_character(char_id):
+    return "REMOVE character 'char ID' from user's favorites" 
+
+@app.route('/favorite/episode/<int:episode_id>', methods=['DELETE'])
+def delete_fav_episode(episode_id):
+    return "REMOVE  episode 'Episode_id' from user's favorites" 
+
+
+
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
