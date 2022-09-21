@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User
+from models import db, User, Characters, Episodes, Fav_characters, Fav_episodes 
 #from models import Person
 
 app = Flask(__name__)
@@ -30,39 +30,63 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
-@app.route('/users', methods=['GET'])
-def handle_hello():
-
-    response_body = {
-        "msg": "Hello, this is your GET /user response "
-    }
-
+@app.route('/user', methods=['GET'])
+def get_user():
+    usuarios = User.query.all()
+    response_body = list(map (lambda user : user.serialize(), usuarios))
     return jsonify(response_body), 200
 
 @app.route('/characters', methods=['GET'])
 def get_characters():
-    return "All the Characters"
+    all_characters = Characters.query.all()
+    all_characters = list(map (lambda char : char.serialize(), all_characters))
+    return jsonify(all_characters)
 
 
 
 @app.route('/characters/<int:char_id>', methods=['GET'])
 def get_one_character(char_id):
-    return "One of the  Characters"
+    one_character = Characters.query.get(char_id)
+    return jsonify(one_character.serialize())
 
 
 @app.route('/episodes', methods=['GET'])
 def get_episodes():
-    return "All the Episodes"
+    all_episodes = Episodes.query.all()
+    all_episodes = list(map (lambda episode : episode.serialize(),  all_episodes))
+    return jsonify( all_episodes)
 
 
-@app.route('/pisodes/<int:episode_id>', methods=['GET'])
+@app.route('/episodes/<int:episode_id>', methods=['GET'])
 def get_one_episode(episode_id):
-    return "One of the  Episodes"
+    one_episode = Episodes.query.get(episode_id)
+    return jsonify(one_episode.serialize())
 
 @app.route('/users/favorites', methods=['GET'])
-def et_user_favorites():
-    return "All the current user favorites"
+def get_user_favorites():
+    usuario = User.query.get(1) #luego sacarle el mail, porque el favorito está con el mail.
+    mail_usuario = usuario.email
+    fav_episodes = Fav_episodes.query.filter_by(email = mail_usuario)
+    fav_characters = Fav_characters.query.filter_by(email = mail_usuario) #Esto me entrega los registros de la tabla
+    id_fav_char = list(map (lambda favo : favo.char_id,  fav_characters)) #Aca saco cada char_ID de cada registro
+    #Ahora, de cada uno de esos numeros, voy a buscarlo en la tabal de Characters.
+    toda_la_info_de_chars = []
+    for ids in id_fav_char:
+        aux = Characters.query.get(ids)
+        toda_la_info_de_chars.append(aux)
 
+    favoritos_todos = [*toda_la_info_de_chars ,  *fav_episodes] #Eso une ambos arreglos de favoritos
+    favoritos_todos = list(map (lambda favo : favo.serialize(),  favoritos_todos))
+    return jsonify(favoritos_todos)
+
+
+
+
+
+###
+"""De acá hacia abajo son los métodos POST y DELETE.
+HAcia ARRIBA son todos GET
+"""
 @app.route('/favorite/character/<int:char_id>', methods=['POST'])
 def post_fav_character(char_id):
     return "Add character 'char ID' to user's favorites" 
@@ -71,7 +95,6 @@ def post_fav_character(char_id):
 def post_fav_episode(episode_id):
     return "Add a episode 'Episode_id' to user's favorites" 
 
-______
 @app.route('/favorite/character/<int:char_id>', methods=['DELETE'])
 def delete_fav_character(char_id):
     return "REMOVE character 'char ID' from user's favorites" 
