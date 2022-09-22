@@ -87,9 +87,21 @@ def get_user_favorites():
 """De acá hacia abajo son los métodos POST y DELETE.
 HAcia ARRIBA son todos GET
 """
-@app.route('/favorite/character/<int:char_id>', methods=['POST'])
+@app.route('/favorites/character/<int:char_id>', methods=['POST'])
 def post_fav_character(char_id):
-    return "Add character 'char ID' to user's favorites" 
+    one = Characters.query.get(char_id)
+    if (one):
+        new_fav = Fav_characters()
+        new_fav.email = User.query.get(1).email
+        new_fav.char_id = char_id
+
+        db.session.add (new_fav)
+        db.session.commit()
+        return "Agregado!" 
+    else:
+        raise APIException("Personaje no existe", status_code=404 )
+
+
 
 @app.route('/favorite/episode/<int:episode_id>', methods=['POST'])
 def post_fav_episode(episode_id):
