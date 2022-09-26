@@ -70,7 +70,7 @@ class Fav_characters (db.Model):
 class Fav_episodes (db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email =  db.Column(db.String(120), db.ForeignKey('user.email'))
-    title = db.Column(db.String(120), db.ForeignKey('episodes.title'))
+    ep_id = db.Column(db.Integer, db.ForeignKey('episodes.id'))
     rel_user = db.relationship('User')
     rel_episodes = db.relationship('Episodes')
         
@@ -80,5 +80,6 @@ class Fav_episodes (db.Model):
     def serialize(self):
         return {
             "email": self.email,
+            "Ep_id": self.ep_id,
             "Title": self.title
         }

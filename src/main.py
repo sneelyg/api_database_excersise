@@ -87,7 +87,7 @@ def get_user_favorites():
 """De acá hacia abajo son los métodos POST y DELETE.
 HAcia ARRIBA son todos GET
 """
-@app.route('/favorites/character/<int:char_id>', methods=['POST'])
+@app.route('/favorites/characters/<int:char_id>', methods=['POST'])
 def post_fav_character(char_id):
     one = Characters.query.get(char_id)
     if (one):
@@ -103,17 +103,46 @@ def post_fav_character(char_id):
 
 
 
-@app.route('/favorite/episode/<int:episode_id>', methods=['POST'])
+@app.route('/favorites/episodes/<int:episode_id>', methods=['POST'])
 def post_fav_episode(episode_id):
-    return "Add a episode 'Episode_id' to user's favorites" 
+    one = Episodes.query.get(episode_id)
+    if (one):
+        new_fav_epi = Fav_episodes()
+        new_fav_epi.email = User.query.get(1).email
+        new_fav_epi.ep_id = episode_id
 
-@app.route('/favorite/character/<int:char_id>', methods=['DELETE'])
+        db.session.add (new_fav_epi)
+        db.session.commit()
+        return "Episodio Agregado"
+
+    else :
+        raise APIException("Episodio no existe", status_code=404 )
+
+
+
+
+@app.route('/favorites/characters/<int:char_id>', methods=['DELETE'])
 def delete_fav_character(char_id):
-    return "REMOVE character 'char ID' from user's favorites" 
+    one = Fav_characters.query.filter_by(char_id = char_id).first() #first ahce que sea el primer elemento , sino, el método filter_by entrega un Arreglo de resultados
+    if (one): 
+        db.session.delete(one)
+        db.session.commit()
+        return "Favorito Eliminado"
+    else :
+        raise APIException("Personaje no existe en favoritos", status_code=404 )
 
-@app.route('/favorite/episode/<int:episode_id>', methods=['DELETE'])
+@app.route('/favorites/episodes/<int:episode_id>', methods=['DELETE'])
 def delete_fav_episode(episode_id):
-    return "REMOVE  episode 'Episode_id' from user's favorites" 
+    one = Fav_episodes.query.filter_by(ep_id = episode_id).first() #first ahce que sea el primer elemento , sino, el método filter_by entrega un Arreglo de resultados
+    if (one): 
+        db.session.delete(one)
+        db.session.commit()
+        return "Favorito Eliminado"
+    else :
+        raise APIException("Episodio no existe en favoritos", status_code=404 )
+
+
+    return "Episode Deleted form Favorites" 
 
 
 
